@@ -1,5 +1,5 @@
 
-name: Generate Arabic YouTube Script
+name: Generate Arabic YouTube Content
 
 on:
   workflow_dispatch:
@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get repository files
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Python
@@ -20,14 +20,22 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Generate script with Gemini
+      - name: Install requirements
+        run: pip install -r requirements.txt
+
+      - name: Generate script
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python generate_script.py
 
-      - name: Save generated script
+      - name: Generate Syrian voice
+        run: python generate_audio.py
+
+      - name: Upload results
         uses: actions/upload-artifact@v4
         with:
-          name: arabic-video-script
-          path: output/script.txt
+          name: arabic-youtube-content
+          path: |
+            output/script.txt
+            output/voice.mp3
           if-no-files-found: error
